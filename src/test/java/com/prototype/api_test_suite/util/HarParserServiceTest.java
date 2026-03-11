@@ -1,5 +1,6 @@
 package com.prototype.api_test_suite.util;
 
+import com.prototype.api_test_suite.model.HarRequest;
 import com.prototype.api_test_suite.service.HarParserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,15 +35,17 @@ public class HarParserServiceTest {
         String harFilePath = new File(resource.getFile()).getAbsolutePath();
 
         // WHEN the HarParserService processes it
-        List<Map<String, String>> requests = harParserService.extractPostRequests(harFilePath);
+        List<HarRequest> requests = harParserService.extractPostRequests(harFilePath);
 
         // THEN it should find exactly one HAR request
         assertThat(requests).isNotNull().hasSize(1);
 
         // AND that request should have the correct details
-        Map<String, String> postRequest = requests.get(0);
-        assertThat(postRequest).containsEntry("method", "POST");
-        assertThat(postRequest).containsEntry("url", "http://localhost:8081/queue/hearing-results");
-        assertThat(postRequest).containsEntry("body", "{\"id\":\"d1e2f3a4-b5c6-7890-1234-56789abcdef0\",\"offenceId\":\"e1f2a3b4-c5d6-7890-1234-56789abcdef1\",\"caseId\":\"f1a2b3c4-d5e6-7890-1234-56789abcdef2\",\"resultLevel\":\"TEST_LEVEL\",\"resultLabel\":\"TEST_LABEL\"}");
+        HarRequest postRequest = requests.get(0);
+        assertThat(postRequest.method()).isEqualTo("POST");
+        assertThat(postRequest.url()).isEqualTo( "http://localhost:8081/queue/hearing-results");
+
+        assertThat(postRequest.postData()).isNotNull();
+        assertThat(postRequest.postData().text()).isEqualTo("{\"id\":\"d1e2f3a4-b5c6-7890-1234-56789abcdef0\",\"offenceId\":\"e1f2a3b4-c5d6-7890-1234-56789abcdef1\",\"caseId\":\"f1a2b3c4-d5e6-7890-1234-56789abcdef2\",\"resultLevel\":\"TEST_LEVEL\",\"resultLabel\":\"TEST_LABEL\"}");
     }
 }
