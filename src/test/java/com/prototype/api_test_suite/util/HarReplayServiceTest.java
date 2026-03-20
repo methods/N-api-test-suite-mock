@@ -6,8 +6,6 @@ import com.prototype.api_test_suite.model.HarReplayResult;
 import com.prototype.api_test_suite.model.HarRequest;
 import com.prototype.api_test_suite.service.HarParserService;
 import com.prototype.api_test_suite.service.HarReplayService;
-import org.aspectj.lang.annotation.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -32,7 +30,7 @@ public class HarReplayServiceTest extends ApiBaseTest {
         MockitoAnnotations.openMocks(this);
         ObjectMapper objectMapper = new ObjectMapper();
         harParserService = new HarParserService(objectMapper);
-        harReplayService = new HarReplayService();
+        harReplayService = new HarReplayService(objectMapper);
 
         // GIVEN a manually created List<HarRequests>
         UUID testId = UUID.randomUUID();

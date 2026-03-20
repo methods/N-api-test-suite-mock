@@ -57,7 +57,7 @@ public class ApiTestSuiteApplication {
                       System.out.println("  Original URL: " + result.getOriginalRequest().url());
                       System.out.println("  HTTP Status: " + result.getHttpStatus());
                       System.out.println("  Correlation ID: " + result.getCorrelationId());
-                      // Add other details like response body, forensic data later
+                      System.out.println("  Response Body: " + result.getResponseBody());
                       System.out.println("--------------------");
                   }
               }
