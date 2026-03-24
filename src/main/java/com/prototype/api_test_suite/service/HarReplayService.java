@@ -1,8 +1,6 @@
 package com.prototype.api_test_suite.service;
 
-import com.prototype.api_test_suite.model.HarHeader;
-import com.prototype.api_test_suite.model.HarReplayResult;
-import com.prototype.api_test_suite.model.HarRequest;
+import com.prototype.api_test_suite.model.*;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
@@ -33,11 +31,14 @@ public class HarReplayService {
                 .build();
         }
 
-    public List<HarReplayResult> replayHarRequests(List<HarRequest> harRequests) {
+    public List<HarReplayResult> replayHarRequests(List<HarEntry> harEntries) {
 
         List<HarReplayResult> replayResults = new ArrayList<>();
 
-        for (HarRequest request : harRequests) {
+        for (HarEntry entry : harEntries) {
+            HarRequest request = entry.request();
+            HarResponse originalResponse = entry.response();
+            System.out.println("Original Response: " + originalResponse);
             String method = request.method();
             String url = request.url();
             String originalBody = "";
@@ -102,6 +103,17 @@ public class HarReplayService {
                 result.setHttpStatus(response.getStatusCode());
                 result.setResponseBody(response.getBody().asString());
                 result.setCorrelationId(response.getHeader("X-Correlation-ID"));
+                result.setOriginalCorrelationId(null);
+
+                // Get the original correlation Id
+                if (originalResponse.headers() != null) {
+                    for (HarHeader header : originalResponse.headers()) {
+                        if (header.name() != null && "X-Correlation-ID".equalsIgnoreCase(header.name())) {
+                            System.out.println("Original Correlation Id check: " + header.value());
+                            result.setOriginalCorrelationId(header.value());
+                        }
+                    };
+                }
 
                 replayResults.add(result);
             }

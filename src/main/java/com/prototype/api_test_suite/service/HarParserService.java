@@ -21,9 +21,9 @@ public class HarParserService {
         this.objectMapper = objectMapper;
     }
 
-    public List<HarRequest> extractPostRequests(String harFilePath) throws IOException {
+    public List<HarEntry> extractPostRequests(String harFilePath) throws IOException {
 
-        List<HarRequest> postRequests = new ArrayList<>();
+        List<HarEntry> postEntries = new ArrayList<>();
         File harFile = new File(harFilePath);
         // Map the HAR file to the Har Model
         Har har = objectMapper.readValue(harFile, Har.class);
@@ -41,7 +41,7 @@ public class HarParserService {
                     System.out.println("Headers: " + entry.request().headers());
                     System.out.println("------------------------");
 
-                    postRequests.add(entry.request());
+                    postEntries.add(entry);
 
                     if (entry.response() != null) {
                         System.out.println("-- POST Response --");
@@ -63,6 +63,6 @@ public class HarParserService {
                 }
             }
         }
-        return postRequests;
+        return postEntries;
     };
 }

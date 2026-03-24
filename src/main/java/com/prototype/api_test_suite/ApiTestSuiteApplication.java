@@ -1,5 +1,6 @@
 package com.prototype.api_test_suite;
 
+import com.prototype.api_test_suite.model.HarEntry;
 import com.prototype.api_test_suite.model.HarReplayResult;
 import com.prototype.api_test_suite.model.HarRequest;
 import com.prototype.api_test_suite.service.HarParserService;
@@ -42,14 +43,14 @@ public class ApiTestSuiteApplication {
 
           if (harFilePath != null) {
               System.out.println("Processing HAR file" + harFilePath);
-              List<HarRequest> parsedRequests = harParserService.extractPostRequests(harFilePath);
+              List<HarEntry> parsedEntries = harParserService.extractPostRequests(harFilePath);
 
-              if (parsedRequests.isEmpty()) {
+              if (parsedEntries.isEmpty()) {
                   System.out.println("No POST requests found in HAR. Nothing to replay.");
               } else {
                   // 2. Replay the parsed requests
                   System.out.println("Replaying requests...");
-                  List<HarReplayResult> replayResults = harReplayService.replayHarRequests(parsedRequests);
+                  List<HarReplayResult> replayResults = harReplayService.replayHarRequests(parsedEntries);
 
                   // 3. Print the results (for initial verification)
                   System.out.println("--- Replay Results ---");

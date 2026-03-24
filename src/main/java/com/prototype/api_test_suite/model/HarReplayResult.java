@@ -13,5 +13,6 @@ public class HarReplayResult {
     private int httpStatus;
     private String responseBody;
     private String correlationId;
+    private String originalCorrelationId;
     private Map<String, Object> replayResponseData;
 }
