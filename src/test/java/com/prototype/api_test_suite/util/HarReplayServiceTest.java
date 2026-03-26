@@ -1,6 +1,8 @@
 package com.prototype.api_test_suite.util;
 
-import com.prototype.api_test_suite.ApiBaseTest;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.prototype.api_test_suite.model.*;
 import com.prototype.api_test_suite.service.HarParserService;
 import com.prototype.api_test_suite.service.HarReplayService;
@@ -14,8 +16,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@WireMockTest
 public class HarReplayServiceTest {
 
     @Mock
@@ -66,12 +70,22 @@ public class HarReplayServiceTest {
     }
 
     @Test
-    public void shouldReplaySinglePostRequestSuccessfully() {
+    public void shouldReplaySinglePostRequestSuccessfully(WireMockRuntimeInfo wmRuntimeInfo) {
         // Set up
         MockitoAnnotations.openMocks(this);
         ObjectMapper objectMapper = new ObjectMapper();
         harParserService = new HarParserService(objectMapper);
         harReplayService = new HarReplayService(objectMapper);
+        WireMock wireMock = wmRuntimeInfo.getWireMock();
+
+        // Configure WireMock to respond
+        String liveCorrelationId = UUID.randomUUID().toString();
+        stubFor(post(urlEqualTo("/queue/hearing-results"))
+                .willReturn(aResponse()
+                        .withStatus(202)
+                        .withHeader("X-Correlation-ID", liveCorrelationId)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"message\": \"Command received\"}")));
 
         UUID testId = UUID.randomUUID();
         String originalCorrelationId = UUID.randomUUID().toString();
@@ -83,7 +97,7 @@ public class HarReplayServiceTest {
         // GIVEN a mock HarEntry using the helper
         HarEntry mockHarEntry = createMockHarEntry(
                 "POST",
-                "http://localhost:8081/queue/hearing-results", // Ensure URL points to WireMock
+                wmRuntimeInfo.getHttpBaseUrl() + "/queue/hearing-results", // Ensure URL points to WireMock
                 requestBody,
                 originalCorrelationId,
                 requestHeaders,
@@ -103,7 +117,7 @@ public class HarReplayServiceTest {
         assertThat(firstResult.getHttpStatus()).isEqualTo(202);
         assertThat(firstResult.getCorrelationId()).isNotNull();
         assertThat(firstResult.getOriginalCorrelationId()).isEqualTo(originalCorrelationId);
-        assertThat(firstResult.getOriginalRequest().url()).contains("localhost:8081");
+        assertThat(firstResult.getOriginalRequest().url()).contains("/queue/hearing-results");
         assertThat(firstResult.getOriginalRequest().postData().text()).contains(testId.toString());
     }
 }
