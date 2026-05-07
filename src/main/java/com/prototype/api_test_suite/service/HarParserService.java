@@ -3,7 +3,6 @@ package com.prototype.api_test_suite.service;
 import com.prototype.api_test_suite.model.Har;
 import com.prototype.api_test_suite.model.HarEntry;
 import com.prototype.api_test_suite.model.HarHeader;
-import com.prototype.api_test_suite.model.HarRequest;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
@@ -32,8 +31,8 @@ public class HarParserService {
             System.out.println("Found " + har.log().entries().size() + " entries.");
 
             for (HarEntry entry : har.log().entries()) {
-//                System.out.println("Processing entry: " + entry.request());
 
+                // Search for POST requests, add the entire HarEntry to the postEntries List
                 if (entry.request() != null && "POST".equals(entry.request().method())) {
                     System.out.println("--- Found POST Request ---"); // Debug print
                     System.out.println("URL: " + entry.request().url());
