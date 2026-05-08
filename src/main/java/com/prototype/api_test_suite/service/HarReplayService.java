@@ -48,6 +48,8 @@ public class HarReplayService {
             System.out.println(" HAR replay Original request body: " + originalBody);
             String modifiedBody = originalBody;
 
+            // Note: If originalBody is not valid JSON this will throw an exception
+            // TODO(?): Add Exception catching for invalid body
             if (!originalBody.isEmpty()) {
                 ObjectNode objectNode = null;
                 JsonNode jsonNode = objectMapper.readTree(originalBody);

@@ -32,7 +32,7 @@ public class HarParserService {
 
             for (HarEntry entry : har.log().entries()) {
 
-                // Search for POST requests, add the entire HarEntry to the postEntries List
+                // Search for POST requests, if found add the HarEntry (contains Request and Response) to the postEntries List
                 if (entry.request() != null && "POST".equals(entry.request().method())) {
                     System.out.println("--- Found POST Request ---"); // Debug print
                     System.out.println("URL: " + entry.request().url());

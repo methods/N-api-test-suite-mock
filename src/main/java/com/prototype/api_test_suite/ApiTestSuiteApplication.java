@@ -43,16 +43,18 @@ public class ApiTestSuiteApplication {
 
           if (harFilePath != null) {
               System.out.println("Processing HAR file" + harFilePath);
+
+              // 1. Parse the HAR file, save entries with POST requests to a List
               List<HarEntry> parsedEntries = harParserService.extractPostRequests(harFilePath);
 
               if (parsedEntries.isEmpty()) {
                   System.out.println("No POST requests found in HAR. Nothing to replay.");
               } else {
-                  // 2. Replay the parsed requests
+                  // 2. Replay the parsed requests, store the HarReplayResults in a list
                   System.out.println("Replaying requests...");
                   List<HarReplayResult> replayResults = harReplayService.replayHarRequests(parsedEntries);
 
-                  // 3. Print the results (for initial verification)
+                  // 3. Print the results to the console for the time being
                   System.out.println("--- Replay Results ---");
                   for (HarReplayResult result : replayResults) {
                       System.out.println("  Original URL: " + result.getOriginalRequest().url());
